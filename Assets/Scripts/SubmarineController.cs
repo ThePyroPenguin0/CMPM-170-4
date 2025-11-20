@@ -6,7 +6,7 @@ public class SubmarineController : MonoBehaviour
 {
     public enum NavigationStates
     {
-        Back, AllStop, AheadOneThird, AheadTwoThirds, AheadStandard, AheadFull, AheadFlank
+        Back, AllStop, AheadOneThird, AheadStandard, AheadFull
     }
 
     public NavigationStates currentState = NavigationStates.AllStop;
@@ -20,7 +20,7 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private GameObject diveButton;
 
     [Header("Control variables")]
-    [SerializeField] private float maxSpeed = 5f;
+    [SerializeField] private float maxSpeed = 3f;
     [SerializeField] private float acceleration = 0.5f;
     [SerializeField] private float diveRate = 0.2f;
     [SerializeField] public float batteryCharge = 100f;
@@ -109,7 +109,7 @@ public class SubmarineController : MonoBehaviour
         switch (buttonType)
         {
             case NavigationButton.NavButtonType.Ahead:
-                if (currentState < NavigationStates.AheadFlank)
+                if (currentState < NavigationStates.AheadFull)
                     currentState++;
                 break;
             case NavigationButton.NavButtonType.Back:
@@ -146,10 +146,8 @@ public class SubmarineController : MonoBehaviour
             case NavigationStates.Back: return maxSpeed * 0.25f;
             case NavigationStates.AllStop: return 0f;
             case NavigationStates.AheadOneThird: return maxSpeed * 0.33f;
-            case NavigationStates.AheadTwoThirds: return maxSpeed * 0.66f;
             case NavigationStates.AheadStandard: return maxSpeed * 0.8f;
             case NavigationStates.AheadFull: return maxSpeed * 0.95f;
-            case NavigationStates.AheadFlank: return maxSpeed;
             default: return 0f;
         }
     }
@@ -162,10 +160,10 @@ public class SubmarineController : MonoBehaviour
         float aftDist = aftSonar.GetComponent<SonarController>().Ping();
         float keelDist = keelSonar.GetComponent<SonarController>().Ping();
 
-        bowText.text = $"Bow: {bowDist:F1} m";
-        sternText.text = $"Stern: {aftDist:F1} m";
-        portText.text = $"Port: {portDist:F1} m";
-        starboardText.text = $"Starboard: {starboardDist:F1} m";
-        keelText.text = $"Keel: {keelDist:F1} m";
+        bowText.text = $"Bow: {bowDist:F1}m";
+        sternText.text = $"Stern: {aftDist:F1}m";
+        portText.text = $"Port: {portDist:F1}m";
+        starboardText.text = $"Starboard: {starboardDist:F1}m";
+        keelText.text = $"Keel: {keelDist:F1}m";
     }
 }
