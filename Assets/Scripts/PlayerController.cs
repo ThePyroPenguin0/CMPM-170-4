@@ -3,7 +3,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private InputSystem_Actions controls;
     private Vector2 moveInput;
     private Vector2 lookInput;
     public float mouseSensitivity = 1.0f;
@@ -12,49 +11,70 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     private float pitch = 0f;
     private Camera cam;
+
+    private Rigidbody submarineRb;
+    private Quaternion lastSubmarineRotation;
+
     void Awake()
     {
-        controls = new InputSystem_Actions();
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         cam = Camera.main;
+
+        submarineRb = transform.parent.GetComponent<Rigidbody>();
+        lastSubmarineRotation = submarineRb.rotation;
+        rb.linearDamping = 2f;
+        rb.angularDamping = 2f;
     }
 
-    void OnEnable()
+    public void OnMove(InputAction.CallbackContext context)
     {
-        controls.Enable();
+        moveInput = context.ReadValue<Vector2>();
     }
 
-    void OnDisable()
+    public void OnLook(InputAction.CallbackContext context)
     {
-        controls.Disable();
+        lookInput = context.ReadValue<Vector2>();
     }
 
-    void Update()
+    public void OnInteract(InputAction.CallbackContext context)
     {
-        moveInput = controls.Player.Move.ReadValue<Vector2>();
-        lookInput = controls.Player.Look.ReadValue<Vector2>();
+        if (context.performed)
+        {
+            Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+            Ray ray = Camera.main.ScreenPointToRay(screenCenter);
+            Debug.DrawRay(ray.origin, ray.direction, Color.green, 1.0f);
+            if (Physics.Raycast(ray, out RaycastHit hit, 5f))
+            {
+                NavigationButton navButton = hit.collider.GetComponent<NavigationButton>();
+                if (navButton != null)
+                    navButton.OnMouseDown();
+            }
+        }
     }
 
     void FixedUpdate()
     {
-        // Convert 2D input into 3D direction
-        Vector3 direction =
-            transform.forward * moveInput.y +
-            transform.right * moveInput.x;
+        Quaternion currentSubmarineRotation = submarineRb.rotation;
+        Quaternion deltaRotation = currentSubmarineRotation * Quaternion.Inverse(lastSubmarineRotation);
+        rb.MoveRotation(deltaRotation * rb.rotation);
+        lastSubmarineRotation = currentSubmarineRotation;
 
-        // Physics movement
-        rb.AddForce(direction * moveSpeed, ForceMode.Acceleration);
+        Vector3 submarineVelocity = submarineRb.linearVelocity;
+        Vector3 angularVelocity = submarineRb.angularVelocity;
+        Vector3 relativePosition = rb.worldCenterOfMass - submarineRb.worldCenterOfMass;
+        Vector3 rotationalVelocity = Vector3.Cross(angularVelocity, relativePosition);
+        Vector3 relativeMove = (transform.forward * moveInput.y + transform.right * moveInput.x) * moveSpeed;
+        rb.linearVelocity = submarineVelocity + rotationalVelocity + relativeMove;
+
         HandleLook();
     }
 
-        void HandleLook()
+    void HandleLook()
     {
-        // Horizontal rotation (player yaw)
         float yaw = lookInput.x * mouseSensitivity;
         transform.Rotate(0f, yaw, 0f);
 
-        // Vertical rotation (camera pitch)
         pitch -= lookInput.y * mouseSensitivity;
         pitch = Mathf.Clamp(pitch, -80f, 80f);
 
