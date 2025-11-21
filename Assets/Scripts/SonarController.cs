@@ -9,8 +9,10 @@ public class SonarController : MonoBehaviour
     [SerializeField] public GameObject sonarDisplay;
 
     [Header("Sonar Arc Settings")]
-    [SerializeField] private int rayCount = 45;
-    private float arcAngle = 120f;
+    [SerializeField] private int rayCount = 20;
+    [SerializeField]private float arcAngle = 90f;
+
+    [SerializeField] public GameObject collisionPointSphere;
 
     public void Awake()
     {
@@ -35,6 +37,14 @@ public class SonarController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(sonarOrigin.position, rayDir, out hit, maxDistance, terrainMask))
             {
+                if (collisionPointSphere != null)
+                {
+                    // spawn at the actual hit point (small offset to avoid z-fighting)
+                    Vector3 spawnPos = hit.point + hit.normal * 0.01f;
+                    GameObject instance = Instantiate(collisionPointSphere, spawnPos, Quaternion.identity);
+                    Destroy(instance, 5f);
+                }
+
                 if (hit.distance < minDistance)
                 {
                     minDistance = hit.distance;
@@ -43,12 +53,13 @@ public class SonarController : MonoBehaviour
                 }
             }
         }
-        if(hitSomething)
+        if (hitSomething)
         {
             return minDistance;
         }
-        else{
-            return 100f;
+        else
+        {
+            return 99f;
         }
     }
 

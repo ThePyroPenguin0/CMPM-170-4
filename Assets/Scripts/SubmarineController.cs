@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI; // Add this for Text
 using TMPro;
 
 public class SubmarineController : MonoBehaviour
@@ -27,6 +26,7 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private float batteryDrainRate = 0f;
     [SerializeField] public float oxygen = 100f;
     [SerializeField] private float oxygenConsumptionRate = 0.02f;
+    [SerializeField] private Transform terrainRoot;
 
     [Header("Steering")]
     [SerializeField] private float rudderAngle = 0f; // -1 (full left) to 1 (full right)
@@ -43,6 +43,7 @@ public class SubmarineController : MonoBehaviour
 
     [Header("Active Sonar Display")]
     [SerializeField] private GameObject activeSonarDisplay;
+    [SerializeField] private GameObject collisionPointSphere;
 
     [Header("Sonar Text Fields")]
     [SerializeField] private TextMeshProUGUI bowText;
@@ -101,7 +102,7 @@ public class SubmarineController : MonoBehaviour
         if (currentState == NavigationStates.Back)
             moveDirection = -transform.forward;
 
-        rb.linearVelocity = moveDirection * Mathf.Abs(currentSpeed);
+        terrainRoot.position -= moveDirection * Mathf.Abs(currentSpeed) * Time.fixedDeltaTime;
     }
 
     public void OnNavigationButtonPressed(NavigationButton.NavButtonType buttonType)
