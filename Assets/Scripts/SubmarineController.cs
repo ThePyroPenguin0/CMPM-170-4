@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class SubmarineController : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private float diveRate = 0.2f;
     [SerializeField] public float batteryCharge = 100f;
     [SerializeField] private float batteryDrainRate = 0f;
+    [SerializeField] private float pingBatteryCost = 5f;
     [SerializeField] public float oxygen = 100f;
     [SerializeField] private float oxygenConsumptionRate = 0.02f;
     [SerializeField] private Transform terrainRoot;
@@ -41,6 +43,8 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private GameObject aftSonar; // Back
     [SerializeField] private GameObject keelSonar; // Bottom (no laughing!)
 
+    
+
     [Header("Active Sonar Display")]
     [SerializeField] private GameObject activeSonarDisplay;
     [SerializeField] private GameObject collisionPointSphere;
@@ -51,6 +55,10 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI portText;
     [SerializeField] private TextMeshProUGUI starboardText;
     [SerializeField] private TextMeshProUGUI keelText;
+
+    [Header("Power Text Fields")]
+    [SerializeField] public TextMeshProUGUI batteryText;
+    [SerializeField] public TextMeshProUGUI oxygenText;
 
     private float currentSpeed = 0f;
     private Rigidbody rb;
@@ -69,6 +77,10 @@ public class SubmarineController : MonoBehaviour
         }
         rb.linearDamping = 2f;
         rb.angularDamping = 2f;
+
+        UpdateBatteryText();
+        StartCoroutine(BatteryDrainRoutine());
+        StartCoroutine(OxygenDrainRoutine());
     }
 
     // Update is called once per frame
@@ -155,6 +167,9 @@ public class SubmarineController : MonoBehaviour
 
     private void Ping()
     {
+
+        ModifyBattery(-pingBatteryCost);
+
         float portDist = portSonar.GetComponent<SonarController>().Ping();
         float starboardDist = starboardSonar.GetComponent<SonarController>().Ping();
         float bowDist = bowSonar.GetComponent<SonarController>().Ping();
@@ -167,4 +182,64 @@ public class SubmarineController : MonoBehaviour
         starboardText.text = $"Starboard: {starboardDist:F1}m";
         keelText.text = $"Keel: {keelDist:F1}m";
     }
+
+    private IEnumerator BatteryDrainRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(3f);  // every 3 seconds
+            ModifyBattery(-batteryDrainRate);     // e.g. 1% if batteryDrainRate = 1
+        }
+    }
+
+    private IEnumerator OxygenDrainRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+
+            float depth = transform.position.y;   
+            float depthMultiplier = 1f;
+
+            if (depth < 0)
+            {
+                
+                depthMultiplier = 1f + Mathf.Abs(depth) / 20f;
+            }
+
+            ModifyOxygen(-oxygenConsumptionRate * depthMultiplier);
+        }
+    }
+
+
+    private void ModifyBattery(float amount)
+    {
+        batteryCharge += amount;
+        batteryCharge = Mathf.Clamp(batteryCharge, 0f, 100f);
+        UpdateBatteryText();
+    }
+
+    private void ModifyOxygen(float amount)
+    {
+        oxygen += amount;
+        oxygen = Mathf.Clamp(oxygen, 0f, 100f);
+        UpdateOxygenText();
+    }
+
+    private void UpdateBatteryText()
+    {
+        if (batteryText != null)
+        {
+            batteryText.text = $"Battery: {Mathf.RoundToInt(batteryCharge)}%";
+        }
+    }
+
+    private void UpdateOxygenText()
+    {
+        if (oxygenText != null)
+        {
+            oxygenText.text = $"Oxygen: {oxygen:F2}%";
+        }
+    }
+
 }
