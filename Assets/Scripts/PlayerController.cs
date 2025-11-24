@@ -1,30 +1,38 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     private Vector2 moveInput;
     private Vector2 lookInput;
-    public float mouseSensitivity = 1.0f;
 
+    [Header("Movement Settings")]
+    public float mouseSensitivity = 1.0f;
     public float moveSpeed = 5f;
+
+    [Header("References")]
     [SerializeField] private Rigidbody rb;
-    private float pitch = 0f;
+    [SerializeField] private Transform vessel;
+
     private Camera cam;
 
-    private Rigidbody submarineRb;
-    private Quaternion lastSubmarineRotation;
+    private float pitch = 0f;
+
+    private Quaternion lastYawRotation;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+
         cam = Camera.main;
 
-        submarineRb = transform.parent.GetComponent<Rigidbody>();
-        lastSubmarineRotation = submarineRb.rotation;
-        rb.linearDamping = 2f;
-        rb.angularDamping = 2f;
+        Vector3 fwd = vessel.forward;
+        fwd.y = 0f;
+        lastYawRotation = Quaternion.LookRotation(fwd, Vector3.up);
+
+        rb.linearDamping = 0f;
+        rb.angularDamping = 100f;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -41,33 +49,27 @@ public class PlayerMovement : MonoBehaviour
     {
         if (context.performed)
         {
-            Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-            Ray ray = Camera.main.ScreenPointToRay(screenCenter);
-            Debug.DrawRay(ray.origin, ray.direction, Color.green, 1.0f);
+            Vector3 center = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
+            Ray ray = Camera.main.ScreenPointToRay(center);
+
             if (Physics.Raycast(ray, out RaycastHit hit, 5f))
             {
-                NavigationButton navButton = hit.collider.GetComponent<NavigationButton>();
-                if (navButton != null)
-                    navButton.OnMouseDown();
+                var btn = hit.collider.GetComponent<NavigationButton>();
+                if (btn != null)
+                    btn.OnMouseDown();
             }
         }
     }
 
     void FixedUpdate()
     {
-        Quaternion currentSubmarineRotation = submarineRb.rotation;
-        Quaternion deltaRotation = currentSubmarineRotation * Quaternion.Inverse(lastSubmarineRotation);
-        rb.MoveRotation(deltaRotation * rb.rotation);
-        lastSubmarineRotation = currentSubmarineRotation;
-
-        Vector3 submarineVelocity = submarineRb.linearVelocity;
-        Vector3 angularVelocity = submarineRb.angularVelocity;
-        Vector3 relativePosition = rb.worldCenterOfMass - submarineRb.worldCenterOfMass;
-        Vector3 rotationalVelocity = Vector3.Cross(angularVelocity, relativePosition);
-        Vector3 relativeMove = (transform.forward * moveInput.y + transform.right * moveInput.x) * moveSpeed;
-        rb.linearVelocity = submarineVelocity + rotationalVelocity + relativeMove;
-
         HandleLook();
+    }
+
+    void LateUpdate()
+    {
+        SubmarineYawShit();
+        SubmarineVelocityShit();
     }
 
     void HandleLook()
@@ -79,5 +81,51 @@ public class PlayerMovement : MonoBehaviour
         pitch = Mathf.Clamp(pitch, -80f, 80f);
 
         cam.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+
+        Vector3 vEuler = vessel.rotation.eulerAngles;
+
+        float vesselPitch = NormalizeAngle(vEuler.x);
+        float vesselRoll = NormalizeAngle(vEuler.z);
+
+        cam.transform.rotation *= Quaternion.Euler(-vesselPitch, 0f, -vesselRoll);
+    }
+    void SubmarineYawShit()
+    {
+        Vector3 fwd = vessel.forward;
+        fwd.y = 0f;
+        fwd.Normalize();
+
+        Quaternion yawRotation = Quaternion.LookRotation(fwd, Vector3.up);
+
+        Quaternion deltaYaw = yawRotation * Quaternion.Inverse(lastYawRotation);
+
+        rb.MoveRotation(deltaYaw * rb.rotation);
+
+        lastYawRotation = yawRotation;
+    }
+    void SubmarineVelocityShit()
+    {
+        Rigidbody subRoot = vessel.root.GetComponent<Rigidbody>();
+        if (subRoot == null) return;
+
+        Vector3 submarineVelocity = subRoot.linearVelocity;
+        Vector3 angularVelocity = subRoot.angularVelocity;
+
+        Vector3 relPos = rb.worldCenterOfMass - subRoot.worldCenterOfMass;
+        Vector3 rotationalVelocity = Vector3.Cross(angularVelocity, relPos);
+
+        Vector3 relativeMove =
+            (transform.forward * moveInput.y +
+             transform.right * moveInput.x) * moveSpeed;
+
+        rb.linearVelocity = submarineVelocity + rotationalVelocity + relativeMove;
+    }
+
+    float NormalizeAngle(float a)
+    {
+        a %= 360f;
+        if (a > 180f) a -= 360f;
+        if (a < -180f) a += 360f;
+        return a;
     }
 }
