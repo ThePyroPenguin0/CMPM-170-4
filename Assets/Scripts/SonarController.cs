@@ -15,7 +15,6 @@ public class SonarController : MonoBehaviour
 
     [SerializeField] public GameObject collisionPointSphere;
 
-    // NEW: parent container for spawned sonar spheres
     [Header("Sphere container")]
     [SerializeField] private Transform sphereParent;
 
