@@ -304,7 +304,6 @@ public class SubmarineController : MonoBehaviour
     {
         float speedFactor = currentSpeed / maxSpeed;
         speedFactor = Mathf.Clamp01(speedFactor);
-        engineAudio.volume = Mathf.Lerp(0.2f, 1.0f, speedFactor) * 30f;
         engineAudio.pitch = Mathf.Lerp(0.8f, 1.6f, speedFactor);
     }
 
