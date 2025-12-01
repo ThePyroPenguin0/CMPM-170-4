@@ -6,18 +6,23 @@ public class SonarController : MonoBehaviour
     public Vector3 direction = Vector3.forward;
     public float maxDistance = 100f;
     public LayerMask terrainMask;
+
     [SerializeField] public GameObject sonarDisplay;
 
     [Header("Sonar Arc Settings")]
     [SerializeField] private int rayCount = 20;
-    [SerializeField]private float arcAngle = 90f;
+    [SerializeField] private float arcAngle = 90f;
 
     [SerializeField] public GameObject collisionPointSphere;
+
+    [Header("Sphere container")]
+    [SerializeField] private Transform sphereParent;
 
     public void Awake()
     {
         terrainMask = LayerMask.GetMask("Terrain");
     }
+
     public float Ping()
     {
         float minDistance = maxDistance;
@@ -25,6 +30,7 @@ public class SonarController : MonoBehaviour
         bool hitSomething = false;
 
         float halfArc = arcAngle / 2f;
+
         for (int i = 0; i < rayCount; i++)
         {
             float lerp = (float)i / (rayCount - 1);
@@ -39,9 +45,15 @@ public class SonarController : MonoBehaviour
             {
                 if (collisionPointSphere != null)
                 {
-                    // spawn at the actual hit point (small offset to avoid z-fighting)
                     Vector3 spawnPos = hit.point + hit.normal * 0.01f;
-                    GameObject instance = Instantiate(collisionPointSphere, spawnPos, Quaternion.identity);
+
+                    GameObject instance = Instantiate(
+                        collisionPointSphere,
+                        spawnPos,
+                        Quaternion.identity,
+                        sphereParent
+                    );
+
                     Destroy(instance, 5f);
                 }
 
@@ -53,15 +65,7 @@ public class SonarController : MonoBehaviour
                 }
             }
         }
-        if (hitSomething)
-        {
-            return minDistance;
-        }
-        else
-        {
-            return 99f;
-        }
+
+        return hitSomething ? minDistance : 99f;
     }
-
-
 }
