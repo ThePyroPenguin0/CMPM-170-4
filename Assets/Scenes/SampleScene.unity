@@ -591,6 +591,12 @@ MonoBehaviour:
   oxygen: 100
   oxygenConsumptionRate: 0.02
   terrainRoot: {fileID: 1062900352}
+  baseBatteryDrainPerSecond: 1
+  idleDrainFactor: 0.1
+  shallowDepthY: 0
+  deepDepthY: -50
+  shallowDepthDrainMultiplier: 2
+  deepDepthDrainMultiplier: 0.5
   rudderAngle: 0
   maxRudder: 1
   rudderStep: 0.2
@@ -609,6 +615,19 @@ MonoBehaviour:
   keelText: {fileID: 1030407884}
   batteryText: {fileID: 2898121}
   oxygenText: {fileID: 1465975975}
+  hullIntegrity: 100
+  collisionDamageMultiplier: 2
+  minCollisionDamage: 5
+  maxCollisionDamage: 30
+  collisionInvulnerabilityTime: 1
+  knockbackDistance: 1
+  knockbackUpAmount: 0.5
+  playerCamera: {fileID: 330585545}
+  shakeDuration: 0.4
+  shakeMagnitude: 0.2
+  leakEffect: {fileID: 0}
+  fireEffect: {fileID: 0}
+  collisionAudio: {fileID: 0}
 --- !u!54 &148874278
 Rigidbody:
   m_ObjectHideFlags: 0
