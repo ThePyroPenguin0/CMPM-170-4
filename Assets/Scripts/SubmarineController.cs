@@ -375,7 +375,7 @@ public class SubmarineController : MonoBehaviour
     {
         if (batteryText != null)
         {
-            batteryText.text = $"Battery: {Mathf.RoundToInt(batteryCharge)}%";
+            batteryText.text = $"Battery: {batteryCharge:F1}%";
         }
     }
 
@@ -383,7 +383,7 @@ public class SubmarineController : MonoBehaviour
     {
         if (oxygenText != null)
         {
-            oxygenText.text = $"Oxygen: {oxygen:F2}%";
+            oxygenText.text = $"O2: {oxygen:F1}%";
         }
     }
 
