@@ -855,9 +855,9 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   shakeDuration: 0.4
   shakeMagnitude: 0.2
-  speedText: {fileID: 0}
-  rudderText: {fileID: 0}
-  pitchText: {fileID: 0}
+  speedText: {fileID: 1674639317}
+  rudderText: {fileID: 1730483619}
+  pitchText: {fileID: 105720944}
   currentRoll: 0
 --- !u!54 &148874278
 Rigidbody:

@@ -33,18 +33,12 @@ public class SubmarineController : MonoBehaviour
 
     [SerializeField] private Transform terrainRoot;
 
-    [Header("Battery Tuning (NEW)")]
-    [Tooltip("Base drain at full speed at 1s tick, before depth modifiers.")]
+
     [SerializeField] private float baseBatteryDrainPerSecond = 1f;
-    [Tooltip("Fraction of drain that still happens when stopped (life support, etc).")]
     [SerializeField] private float idleDrainFactor = 0.1f;
-    [Tooltip("Y position considered 'surface' for efficiency math.")]
     [SerializeField] private float shallowDepthY = 0f;
-    [Tooltip("Y position considered 'deep' for efficiency math (more negative).")]
     [SerializeField] private float deepDepthY = -50f;
-    [Tooltip("Multiplier at surface: >1 means less efficient near surface.")]
     [SerializeField] private float shallowDepthDrainMultiplier = 2f;
-    [Tooltip("Multiplier at deep depth: <1 means more efficient deeper.")]
     [SerializeField] private float deepDepthDrainMultiplier = 0.5f;
 
     [Header("Steering")]
