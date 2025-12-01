@@ -801,8 +801,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubmarineController
   currentState: 1
-  engineAudio: {fileID: 1041017721}
-  pingAudio: {fileID: 549068487}
+  engineAudio: {fileID: 0}
+  pingAudio: {fileID: 0}
   aheadButton: {fileID: 2052196780}
   backButton: {fileID: 464259949}
   portButton: {fileID: 935146493}
@@ -827,12 +827,12 @@ MonoBehaviour:
   maxRudder: 1
   rudderStep: 0.2
   turnRate: 15
-  maxPitchDegrees: 18
-  pitchRateDegreesPerSecond: 2
+  maxPitchDegrees: 10
+  pitchRateDegreesPerSecond: 0.5
   rollPerStep: 3
   maxRollDegrees: 25
-  rollRateDegreesPerSecond: 2
-  vessel: {fileID: 148874276}
+  rollRateDegreesPerSecond: 5
+  vessel: {fileID: 2091812504}
   portSonar: {fileID: 1358455362}
   starboardSonar: {fileID: 1529778120}
   bowSonar: {fileID: 1342654685}
@@ -843,11 +843,21 @@ MonoBehaviour:
   portText: {fileID: 971943225}
   starboardText: {fileID: 725080596}
   keelText: {fileID: 1030407884}
-  speedText: {fileID: 1674639317}
-  rudderText: {fileID: 1730483619}
-  pitchText: {fileID: 105720944}
-  oxygenText: {fileID: 1791870875}
   batteryText: {fileID: 1239778758}
+  oxygenText: {fileID: 1791870875}
+  hullIntegrity: 100
+  collisionDamageMultiplier: 2
+  minCollisionDamage: 5
+  maxCollisionDamage: 30
+  collisionInvulnerabilityTime: 1
+  knockbackDistance: 1
+  knockbackUpAmount: 0.5
+  playerCamera: {fileID: 0}
+  shakeDuration: 0.4
+  shakeMagnitude: 0.2
+  speedText: {fileID: 0}
+  rudderText: {fileID: 0}
+  pitchText: {fileID: 0}
   currentRoll: 0
 --- !u!54 &148874278
 Rigidbody:
@@ -2927,7 +2937,7 @@ MonoBehaviour:
   mouseSensitivity: 0.5
   moveSpeed: 2.5
   rb: {fileID: 755368652}
-  vessel: {fileID: 148874276}
+  vessel: {fileID: 2091812504}
 --- !u!114 &755368651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4744,7 +4754,7 @@ MonoBehaviour:
   rayCount: 10
   arcAngle: 90
   collisionPointSphere: {fileID: 7884956488431092197, guid: d98374bc13bd5384d9dcc521689d6667, type: 3}
-  sphereParent: {fileID: 148874276}
+  sphereParent: {fileID: 0}
 --- !u!1 &1358455362
 GameObject:
   m_ObjectHideFlags: 0
@@ -4799,7 +4809,7 @@ MonoBehaviour:
   rayCount: 10
   arcAngle: 90
   collisionPointSphere: {fileID: 7884956488431092197, guid: d98374bc13bd5384d9dcc521689d6667, type: 3}
-  sphereParent: {fileID: 148874276}
+  sphereParent: {fileID: 0}
 --- !u!1 &1380656100
 GameObject:
   m_ObjectHideFlags: 0
@@ -4854,7 +4864,7 @@ MonoBehaviour:
   rayCount: 18
   arcAngle: 360
   collisionPointSphere: {fileID: 7884956488431092197, guid: 18383154d731f5c4a98deebd91592c39, type: 3}
-  sphereParent: {fileID: 148874276}
+  sphereParent: {fileID: 0}
 --- !u!1 &1394327621
 GameObject:
   m_ObjectHideFlags: 0
@@ -5919,7 +5929,7 @@ MonoBehaviour:
   rayCount: 10
   arcAngle: 90
   collisionPointSphere: {fileID: 7884956488431092197, guid: d98374bc13bd5384d9dcc521689d6667, type: 3}
-  sphereParent: {fileID: 148874276}
+  sphereParent: {fileID: 0}
 --- !u!1 &1556921814
 GameObject:
   m_ObjectHideFlags: 0
@@ -8046,7 +8056,7 @@ RectTransform:
   m_Children:
   - {fileID: 2898120}
   - {fileID: 1465975974}
-  m_Father: {fileID: 2122745935}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -8458,7 +8468,7 @@ MonoBehaviour:
   rayCount: 10
   arcAngle: 90
   collisionPointSphere: {fileID: 7884956488431092197, guid: d98374bc13bd5384d9dcc521689d6667, type: 3}
-  sphereParent: {fileID: 148874276}
+  sphereParent: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -8468,3 +8478,4 @@ SceneRoots:
   - {fileID: 336704811}
   - {fileID: 1590742264}
   - {fileID: 148874276}
+  - {fileID: 2009783017}

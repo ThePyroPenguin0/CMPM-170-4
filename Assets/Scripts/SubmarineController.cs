@@ -102,8 +102,6 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI speedText;
     [SerializeField] private TextMeshProUGUI rudderText;
     [SerializeField] private TextMeshProUGUI pitchText;
-    [SerializeField] private TextMeshProUGUI oxygenText;
-    [SerializeField] private TextMeshProUGUI batteryText;
 
     private float currentSpeed = 0f;
     private Rigidbody rb;
