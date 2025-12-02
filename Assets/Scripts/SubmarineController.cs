@@ -77,7 +77,7 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] public TextMeshProUGUI batteryText;
     [SerializeField] public TextMeshProUGUI oxygenText;
 
-    [Header("Damage & Collision (NEW)")]
+    [Header("Damage & Collision")]
     [SerializeField] private float hullIntegrity = 100f;
     [SerializeField] private float collisionDamageMultiplier = 2f;
     [SerializeField] private float minCollisionDamage = 5f;
@@ -307,8 +307,6 @@ public class SubmarineController : MonoBehaviour
     }
 
     // --- RESOURCE SYSTEMS ---
-
-    // NEW: dynamic battery drain that depends on speed + depth
     private IEnumerator BatteryDrainRoutine()
     {
         while (true)
@@ -416,11 +414,13 @@ public class SubmarineController : MonoBehaviour
         currentState = NavigationStates.AllStop;
         currentSpeed = 0f;
 
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
+        Debug.Log("Took Damage");
+
+        // if (rb != null)
+        // {
+        //     rb.velocity = Vector3.zero;
+        //     rb.angularVelocity = Vector3.zero;
+        // }
 
         // Nudge the sub away from the wall a bit
         // Since the world moves around us, we move the terrain in the opposite direction
