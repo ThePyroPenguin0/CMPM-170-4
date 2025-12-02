@@ -75,7 +75,7 @@ public class SubmarineController : MonoBehaviour
     private float pingTimer = 0f;
     private float pingInterval = 5f;
     private float dashboardTimer = 0f;
-    private float dashboardInterval = 3f;
+    private float dashboardInterval = 1f;
     private float O2Timer = 0f;
     private float O2Interval = 1f;
 
@@ -120,10 +120,7 @@ public class SubmarineController : MonoBehaviour
         {
             Ping();
             pingTimer = 0f;
-        }
-        if (pingTimer == pingInterval / 2f)
-        {
-            pingAudio.Play();
+            StartCoroutine(PlayPingAudioHalfway());
         }
         dashboardTimer += Time.fixedDeltaTime;
         if (dashboardTimer >= dashboardInterval)
@@ -305,6 +302,12 @@ public class SubmarineController : MonoBehaviour
         float speedFactor = currentSpeed / maxSpeed;
         speedFactor = Mathf.Clamp01(speedFactor);
         engineAudio.pitch = Mathf.Lerp(0.8f, 1.6f, speedFactor);
+    }
+
+    private System.Collections.IEnumerator PlayPingAudioHalfway()
+    {
+        yield return new WaitForSeconds(pingInterval / 2f);
+        pingAudio.Play();
     }
 
 }
