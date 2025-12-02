@@ -44,16 +44,16 @@ public class SubmarineController : MonoBehaviour
     [Header("Steering")]
     [SerializeField] private float rudderAngle = 0f;
     [SerializeField] private float maxRudder = 1f;
-    [SerializeField] private float rudderStep = 0.2f;
-    [SerializeField] private float turnRate = 30f;
+    [SerializeField] private float rudderStep = 1f;
+    [SerializeField] private float turnRate = 15f;
 
     [Header("Pitch / Depth Control")]
     [SerializeField] private float maxPitchDegrees = 10f;
     [SerializeField] private float pitchRateDegreesPerSecond = 0.5f;
 
     [Header("Roll Control")]
-    [SerializeField] private float rollPerStep = 3f;
-    [SerializeField] private float maxRollDegrees = 25f;
+    [SerializeField] private float rollPerStep = 15f;
+    [SerializeField] private float maxRollDegrees = 15f;
     [SerializeField] private float rollRateDegreesPerSecond = 5f;
 
     [Header("Vessel Object (Child Mesh)")]
@@ -102,7 +102,7 @@ public class SubmarineController : MonoBehaviour
     private float pingTimer = 0f;
     private float pingInterval = 5f;
     private float dashboardTimer = 0f;
-    private float dashboardInterval = 3f;
+    private float dashboardInterval = 1f;
     private float O2Timer = 0f;
     private float O2Interval = 1f;
 
@@ -153,10 +153,7 @@ public class SubmarineController : MonoBehaviour
         {
             Ping();
             pingTimer = 0f;
-        }
-        if (pingTimer == pingInterval / 2f)
-        {
-            pingAudio.Play();
+            StartCoroutine(PlayPingAudioHalfway());
         }
         dashboardTimer += Time.fixedDeltaTime;
         if (dashboardTimer >= dashboardInterval)
@@ -212,14 +209,14 @@ public class SubmarineController : MonoBehaviour
                 break;
 
             case NavigationButton.NavButtonType.Port:
-                rudderAngle = Mathf.Clamp(rudderAngle - rudderStep, -maxRudder, maxRudder);
-                targetRoll = Mathf.Clamp(targetRoll + rollPerStep, -maxRollDegrees, maxRollDegrees);
+                rudderAngle -= rudderStep;
+                targetRoll += rollPerStep;
                 batteryCharge -= batteryDrainRate * 1;
                 break;
 
             case NavigationButton.NavButtonType.Starboard:
-                rudderAngle = Mathf.Clamp(rudderAngle + rudderStep, -maxRudder, maxRudder);
-                targetRoll = Mathf.Clamp(targetRoll - rollPerStep, -maxRollDegrees, maxRollDegrees);
+                rudderAngle += rudderStep;
+                targetRoll -= rollPerStep;
                 batteryCharge -= batteryDrainRate * 1;
                 break;
 
@@ -485,17 +482,12 @@ public class SubmarineController : MonoBehaviour
         float o2 = oxygen;
         float battery = batteryCharge;
 
-        // Convert enum to string with spaces
         string stateString = System.Text.RegularExpressions.Regex.Replace(currentState.ToString(), "([a-z])([A-Z])", "$1 $2");
-
-        // Rudder as percentage
-        float rudderPercent = (rudderAngle / maxRudder) * 100f;
-
-        // Intended pitch is targetPitch
+        string rudderDirection = rudder > 0 ? "starboard" : (rudder < 0 ? "port" : "center");
         float intendedPitch = targetPitch;
 
         speedText.text = $"Making {speed:F1} knots; {stateString}";
-        rudderText.text = $"Rudder: {rudder:F1}°, target {rudderPercent:F0}%";
+        rudderText.text = $"Rudder: {rudder:F1}°, yawing {rudderDirection}";
         pitchText.text = $"Pitch: {-1 * pitch:F1}°, target {-1 * intendedPitch:F1}°";
         oxygenText.text = $"O2: {o2:F1}%";
         batteryText.text = $"Battery: {battery:F1}%";
@@ -514,6 +506,12 @@ public class SubmarineController : MonoBehaviour
         float speedFactor = currentSpeed / maxSpeed;
         speedFactor = Mathf.Clamp01(speedFactor);
         engineAudio.pitch = Mathf.Lerp(0.8f, 1.6f, speedFactor);
+    }
+
+    private System.Collections.IEnumerator PlayPingAudioHalfway()
+    {
+        yield return new WaitForSeconds(pingInterval / 2f);
+        pingAudio.Play();
     }
 
 }

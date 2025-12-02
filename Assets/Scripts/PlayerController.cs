@@ -47,13 +47,16 @@ public class PlayerController : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
+        Debug.Log("Interact pressed");
         if (context.performed)
         {
+            Debug.Log("Context performed");
             Vector3 center = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
             Ray ray = Camera.main.ScreenPointToRay(center);
-
+            Debug.DrawRay(ray.origin, ray.direction * 5f, Color.green, 1f);
             if (Physics.Raycast(ray, out RaycastHit hit, 5f))
             {
+                Debug.Log("Raycast hit: " + hit.collider.name);
                 var btn = hit.collider.GetComponent<NavigationButton>();
                 if (btn != null)
                     btn.OnMouseDown();
