@@ -209,15 +209,21 @@ public class SubmarineController : MonoBehaviour
                 break;
 
             case NavigationButton.NavButtonType.Port:
-                rudderAngle -= rudderStep;
-                targetRoll += rollPerStep;
-                batteryCharge -= batteryDrainRate * 1;
+                if (rudderAngle > -maxRudder)
+                {
+                    rudderAngle -= rudderStep;
+                    targetRoll += rollPerStep;
+                    batteryCharge -= batteryDrainRate * 1;
+                }
                 break;
 
             case NavigationButton.NavButtonType.Starboard:
-                rudderAngle += rudderStep;
-                targetRoll -= rollPerStep;
-                batteryCharge -= batteryDrainRate * 1;
+                if (rudderAngle < maxRudder)
+                {
+                    rudderAngle += rudderStep;
+                    targetRoll -= rollPerStep;
+                    batteryCharge -= batteryDrainRate * 1;
+                }
                 break;
 
             case NavigationButton.NavButtonType.Dive:
