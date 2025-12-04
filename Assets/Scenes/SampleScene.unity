@@ -989,15 +989,22 @@ MonoBehaviour:
   acceleration: 0.5
   batteryCharge: 100
   batteryDrainRate: 0
+  pingBatteryCost: 5
   oxygen: 100
   oxygenConsumptionRate: 0.02
   terrainRoot: {fileID: 1062900352}
+  baseBatteryDrainPerSecond: 1
+  idleDrainFactor: 0.1
+  shallowDepthY: 0
+  deepDepthY: -50
+  shallowDepthDrainMultiplier: 2
+  deepDepthDrainMultiplier: 0.5
   rudderAngle: 0
   maxRudder: 1
   rudderStep: 1
   turnRate: 15
   maxPitchDegrees: 10
-  pitchRateDegreesPerSecond: 0.5
+  pitchRateDegreesPerSecond: 2
   rollPerStep: 10
   maxRollDegrees: 10
   rollRateDegreesPerSecond: 2
@@ -1012,11 +1019,21 @@ MonoBehaviour:
   portText: {fileID: 971943225}
   starboardText: {fileID: 725080596}
   keelText: {fileID: 1030407884}
+  batteryText: {fileID: 566330901}
+  oxygenText: {fileID: 1221376151}
+  hullIntegrity: 100
+  collisionDamageMultiplier: 2
+  minCollisionDamage: 5
+  maxCollisionDamage: 30
+  collisionInvulnerabilityTime: 1
+  knockbackDistance: 1
+  knockbackUpAmount: 0.5
+  playerCamera: {fileID: 0}
+  shakeDuration: 0.4
+  shakeMagnitude: 0.2
   speedText: {fileID: 1003363158}
   rudderText: {fileID: 378730125}
   pitchText: {fileID: 1299416995}
-  oxygenText: {fileID: 1221376151}
-  batteryText: {fileID: 566330901}
   currentRoll: 0
 --- !u!54 &148874278
 Rigidbody:
