@@ -179,6 +179,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 451073451779226413, guid: 47e8f6f8c30293440ac5c3a2caf982fe, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b4102c93a49a946a29f196c8b9d3c303, type: 2}
     - target: {fileID: 919132149155446097, guid: 47e8f6f8c30293440ac5c3a2caf982fe, type: 3}
       propertyPath: m_Name
       value: hull
@@ -5692,6 +5696,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: -4683669308469848369, guid: f2f6c4b443ca06c419d8c87d4fd54b7f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 02bd07ed3118b44c8a2210bd8d25385b, type: 2}
     - target: {fileID: 919132149155446097, guid: f2f6c4b443ca06c419d8c87d4fd54b7f, type: 3}
       propertyPath: m_Name
       value: extinguisherBox
@@ -16182,6 +16190,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 7202271454713460447, guid: 23d512d768420d74e977aa52478b09a7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: fdcb5ca58dfc64004bb10c8494ed59b7, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 65702495048144492, guid: 23d512d768420d74e977aa52478b09a7, type: 3}
