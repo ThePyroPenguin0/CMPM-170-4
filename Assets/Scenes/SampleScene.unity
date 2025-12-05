@@ -932,6 +932,7 @@ GameObject:
   - component: {fileID: 148874276}
   - component: {fileID: 148874277}
   - component: {fileID: 148874278}
+  - component: {fileID: 148874279}
   m_Layer: 7
   m_Name: PlayerSubmarine
   m_TagString: Untagged
@@ -1034,6 +1035,8 @@ MonoBehaviour:
   speedText: {fileID: 1003363158}
   rudderText: {fileID: 378730125}
   pitchText: {fileID: 1299416995}
+  playerCollider: {fileID: 755368646}
+  subColliders: []
   currentRoll: 0
 --- !u!54 &148874278
 Rigidbody:
@@ -1061,7 +1064,28 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
+--- !u!65 &148874279
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148874275}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 26.550888}
+  m_Center: {x: 0, y: 0, z: 4.3208084}
 --- !u!1 &161644312
 GameObject:
   m_ObjectHideFlags: 0

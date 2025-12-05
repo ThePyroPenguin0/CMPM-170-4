@@ -97,6 +97,10 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rudderText;
     [SerializeField] private TextMeshProUGUI pitchText;
 
+    [Header("Collision Filtering")]
+    [SerializeField] private Collider playerCollider;
+    [SerializeField] private Collider[] subColliders;
+
     private float currentSpeed = 0f;
     private Rigidbody rb;
     private float pingTimer = 0f;
@@ -124,8 +128,36 @@ public class SubmarineController : MonoBehaviour
         rb.linearDamping = 2f;
         rb.angularDamping = 2f;
 
+        if (subColliders == null || subColliders.Length == 0)
+        {
+            // grab all colliders on the sub + its children
+            subColliders = GetComponentsInChildren<Collider>();
+        }
+
+        // If you didn’t drag a playerCollider in the inspector,
+        // try to grab it from the camera’s hierarchy.
+        if (playerCollider == null && playerCamera != null)
+        {
+            playerCollider = playerCamera.GetComponentInParent<Collider>();
+        }
+
+        if (playerCollider != null)
+        {
+            foreach (var c in subColliders)
+            {
+                if (c != null && c != playerCollider)
+                {
+                    Physics.IgnoreCollision(c, playerCollider, true);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("SubmarineController: playerCollider not assigned and none found on playerCamera’s parents.");
+        }
+
         UpdateBatteryText();
-        StartCoroutine(BatteryDrainRoutine()); // now uses speed + depth (NEW logic inside)
+        StartCoroutine(BatteryDrainRoutine());
         StartCoroutine(OxygenDrainRoutine());
 
         speedSoundImpact = currentSpeed / maxSpeed;
@@ -392,10 +424,12 @@ public class SubmarineController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("Can Collide");
         if (!canTakeCollision) return;
 
         // If you want to be stricter, you can check tag or layer:
         // if (!collision.transform.IsChildOf(terrainRoot)) return;
+        Debug.Log("CanTakeCollision");
 
         Vector3 hitNormal = collision.contacts.Length > 0
             ? collision.contacts[0].normal
