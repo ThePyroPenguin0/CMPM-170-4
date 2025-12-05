@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class SubmarineController : MonoBehaviour
 {
@@ -486,7 +487,11 @@ public class SubmarineController : MonoBehaviour
         hullIntegrity = Mathf.Clamp(hullIntegrity, 0f, 100f);
         Debug.Log($"Hull integrity: {hullIntegrity}% (took {amount} damage)");
 
-        // TODO: hook into UI or game-over state when hullIntegrity <= 0
+        if (hullIntegrity <= 0f)
+        {
+            
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     private IEnumerator CollisionCooldownCoroutine()
