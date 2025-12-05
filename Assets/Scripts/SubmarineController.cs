@@ -40,12 +40,15 @@ public class SubmarineController : MonoBehaviour
     [SerializeField] private float deepDepthY = -50f;
     [SerializeField] private float shallowDepthDrainMultiplier = 2f;
     [SerializeField] private float deepDepthDrainMultiplier = 0.5f;
+    [SerializeField] AudioSource buttonAudioSource;
+    [SerializeField] AudioSource errorAudioSource;
+    [SerializeField] AudioSource collisionAudioSource;
 
     [Header("Steering")]
     [SerializeField] private float rudderAngle = 0f;
     [SerializeField] private float maxRudder = 1f;
     [SerializeField] private float rudderStep = 1f;
-    [SerializeField] private float turnRate = 15f;
+    [SerializeField] private float turnRate = 10f;
 
     [Header("Pitch / Depth Control")]
     [SerializeField] private float maxPitchDegrees = 10f;
@@ -196,6 +199,11 @@ public class SubmarineController : MonoBehaviour
                 if (currentState < NavigationStates.AheadFull)
                 {
                     currentState++;
+                    buttonAudioSource.Play();
+                }
+                else
+                {
+                    errorAudioSource.Play();
                 }
                 batteryCharge -= batteryDrainRate * 3;
                 break;
@@ -204,6 +212,11 @@ public class SubmarineController : MonoBehaviour
                 if (currentState > NavigationStates.Back)
                 {
                     currentState--;
+                    buttonAudioSource.Play();
+                }
+                else
+                {
+                    errorAudioSource.Play();
                 }
                 batteryCharge -= batteryDrainRate * 3;
                 break;
@@ -214,6 +227,11 @@ public class SubmarineController : MonoBehaviour
                     rudderAngle -= rudderStep;
                     targetRoll += rollPerStep;
                     batteryCharge -= batteryDrainRate * 1;
+                    buttonAudioSource.Play();
+                }
+                else
+                {
+                    errorAudioSource.Play();
                 }
                 break;
 
@@ -223,6 +241,12 @@ public class SubmarineController : MonoBehaviour
                     rudderAngle += rudderStep;
                     targetRoll -= rollPerStep;
                     batteryCharge -= batteryDrainRate * 1;
+                    buttonAudioSource.Play();
+                    
+                }
+                else
+                {
+                    errorAudioSource.Play();
                 }
                 break;
 
@@ -231,11 +255,13 @@ public class SubmarineController : MonoBehaviour
                 {
                     targetPitch = maxPitchDegrees;
                     batteryCharge -= batteryDrainRate * 5;
+                    errorAudioSource.Play();
                 }
                 else
                 {
                     targetPitch += 5f;
                     batteryCharge -= batteryDrainRate * 5;
+                    buttonAudioSource.Play();
                 }
                 break;
 
@@ -247,6 +273,7 @@ public class SubmarineController : MonoBehaviour
                 else
                 {
                     targetPitch -= 5f;
+                    buttonAudioSource.Play();
                 }
                 break;
         }
@@ -350,11 +377,11 @@ public class SubmarineController : MonoBehaviour
             float depth = transform.position.y;
             float depthMultiplier = 1f;
 
-            if (depth < 0)
-            {
-                // deeper = more O2 consumption
-                depthMultiplier = 1f + Mathf.Abs(depth) / 20f;
-            }
+            // if (depth < 0) <= This should be constant.
+            // {
+            //     // deeper = more O2 consumption
+            //     depthMultiplier = 1f + Mathf.Abs(depth) / 20f;
+            // }
 
             ModifyOxygen(-oxygenConsumptionRate * depthMultiplier);
         }
@@ -392,23 +419,25 @@ public class SubmarineController : MonoBehaviour
 
     // --- COLLISION 
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!canTakeCollision) return;
+    // private void OnCollisionEnter(Collision collision)
+    // {
+    //     if (!canTakeCollision) return;
 
-        // If you want to be stricter, you can check tag or layer:
-        // if (!collision.transform.IsChildOf(terrainRoot)) return;
+    //     // Only handle collision if the collided object is on the "terrain" layer
+    //     if (collision.gameObject.layer != LayerMask.NameToLayer("Terrain")){
+    //         Debug.Log($"Collided with non-terrain object. Layer: {collision.gameObject.layer} ({LayerMask.LayerToName(collision.gameObject.layer)})");
+    //         return;
+    //     }
+    //     Vector3 hitNormal = collision.contacts.Length > 0
+    //         ? collision.contacts[0].normal
+    //         : -transform.forward;
 
-        Vector3 hitNormal = collision.contacts.Length > 0
-            ? collision.contacts[0].normal
-            : -transform.forward;
+    //     float relativeSpeed = collision.relativeVelocity.magnitude;
 
-        float relativeSpeed = collision.relativeVelocity.magnitude;
+    //     HandleCollision(hitNormal, relativeSpeed);
+    // }
 
-        HandleCollision(hitNormal, relativeSpeed);
-    }
-
-    private void HandleCollision(Vector3 hitNormal, float relativeSpeed)
+    public void HandleCollision()
     {
         canTakeCollision = false;
 
@@ -422,27 +451,27 @@ public class SubmarineController : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        // Nudge the sub away from the wall a bit
-        // Since the world moves around us, we move the terrain in the opposite direction
-        if (terrainRoot != null)
-        {
-            Vector3 knockback = hitNormal * knockbackDistance + Vector3.up * knockbackUpAmount;
-            terrainRoot.position += knockback;
-        }
-        else
-        {
-            // fallback: move the sub instead
-            transform.position += (-hitNormal * knockbackDistance) + Vector3.up * knockbackUpAmount;
-        }
+        // // Nudge the sub away from the wall a bit
+        // // Since the world moves around us, we move the terrain in the opposite direction
+        // if (terrainRoot != null)
+        // {
+        //     Vector3 knockback = hitNormal * knockbackDistance + Vector3.up * knockbackUpAmount;
+        //     terrainRoot.position += knockback;
+        // }
+        // else
+        // {
+        //     // fallback: move the sub instead
+        //     transform.position += (-hitNormal * knockbackDistance) + Vector3.up * knockbackUpAmount;
+        // }
 
         //Apply damage based on impact speed
-        float rawDamage = relativeSpeed * collisionDamageMultiplier;
-        float damage = Mathf.Clamp(rawDamage, minCollisionDamage, maxCollisionDamage);
-        ApplyDamage(damage);
+        ApplyDamage(5f);
 
         if (playerCamera != null)
+        {
             StartCoroutine(ScreenShakeCoroutine());
-
+            collisionAudioSource.Play();
+        }
         StartCoroutine(CollisionCooldownCoroutine());
     }
 

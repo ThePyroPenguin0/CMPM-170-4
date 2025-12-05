@@ -7,6 +7,7 @@ public class SonarController : MonoBehaviour
     public float maxDistance = 100f;
     public LayerMask terrainMask;
 
+    [SerializeField] public float range = 5f;
     [SerializeField] public GameObject sonarDisplay;
 
     [Header("Sonar Arc Settings")]
@@ -17,6 +18,15 @@ public class SonarController : MonoBehaviour
 
     [Header("Sphere container")]
     [SerializeField] private Transform sphereParent;
+    [SerializeField] private SubmarineController submarineController;
+
+    private int frameRayOffset = 0;
+    [SerializeField] private int raysPerFrame = 5;
+
+    private bool collisionTriggered = false;
+    private bool collisionActive = false;
+    private float noCollisionTimer = 0f;
+    private const float noCollisionResetTime = 5f;
 
     public void Awake()
     {
@@ -67,5 +77,53 @@ public class SonarController : MonoBehaviour
         }
 
         return hitSomething ? minDistance : 99f;
+    }
+
+    void Update()
+    {
+        float halfArc = arcAngle / 2f;
+        bool collidedThisFrame = false;
+
+        for (int j = 0; j < raysPerFrame; j++)
+        {
+            int i = (frameRayOffset + j) % rayCount;
+            float lerp = (float)i / (rayCount - 1);
+            float angle = Mathf.Lerp(-halfArc, halfArc, lerp);
+            Quaternion rot = Quaternion.AngleAxis(angle, sonarOrigin.up);
+            Vector3 rayDir = rot * sonarOrigin.TransformDirection(direction);
+
+            Debug.DrawRay(sonarOrigin.position, rayDir * range, Color.green, 1f);
+
+            RaycastHit hit;
+            if (Physics.Raycast(sonarOrigin.position, rayDir, out hit, range, terrainMask))
+            {
+                collidedThisFrame = true;
+                break;
+            }
+        }
+
+        if (collidedThisFrame)
+        {
+            if (!collisionActive)
+            {
+                submarineController.HandleCollision();
+                collisionActive = true;
+            }
+            noCollisionTimer = 0f; // Reset timer if collision occurs
+        }
+        else
+        {
+            if (collisionActive)
+            {
+                noCollisionTimer += Time.deltaTime;
+                if (noCollisionTimer >= noCollisionResetTime)
+                {
+                    collisionActive = false;
+                    noCollisionTimer = 0f;
+                }
+            }
+        }
+
+        frameRayOffset = (frameRayOffset + raysPerFrame) % rayCount;
     }
 }
