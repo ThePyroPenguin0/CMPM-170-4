@@ -1418,7 +1418,7 @@ Light:
   m_GameObject: {fileID: 155438906}
   m_Enabled: 1
   serializedVersion: 11
-  m_Type: 3
+  m_Type: 0
   m_Color: {r: 0.35333067, g: 1, b: 0.28490567, a: 1}
   m_Intensity: 500
   m_Range: 13
@@ -1459,7 +1459,7 @@ Light:
     serializedVersion: 2
     m_Bits: 512
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 5, y: 20}
   m_BounceIntensity: 1
